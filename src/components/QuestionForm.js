@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function QuestionForm(props) {
+function QuestionForm({addQuestions}) {
   const [formData, setFormData] = useState({
     prompt: "",
     answer1: "",
@@ -20,7 +20,44 @@ function QuestionForm(props) {
   function handleSubmit(event) {
     event.preventDefault();
     console.log(formData);
-  }
+  
+    fetch('http://localhost:4000/questions', {
+      method: "Post", 
+      headers: {"content-type" : "application/json"},
+      body: JSON.stringify(formData),
+      /*
+      {
+        "prompt": string,
+        "answers": array of strings,
+        "correctIndex": integer
+      }
+      */
+
+      
+    })
+    .then((res) => {
+      if (res.ok){
+        return res.json();
+      } else {
+        throw Error("The post did not complete")
+      }
+    })
+    .then((data) => {
+      addQuestions(data);
+    })
+    setFormData({
+      prompt: "",
+      answer1: "",
+      answer2: "",
+      answer3: "",
+      answer4: "",
+      correctIndex: 0,
+    })
+    .catch((err) => console.error("Server was not obtained"))
+  };
+
+
+
 
   return (
     <section>
